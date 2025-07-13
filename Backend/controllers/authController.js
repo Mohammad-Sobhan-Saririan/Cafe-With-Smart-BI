@@ -95,6 +95,7 @@ export const login = async (req, res) => {
                 age: user.age,
                 position: user.position,
                 creditBalance: user.creditBalance,
+                employeeNumber: user.employeeNumber,
                 role: user.role // Include role in the response
             }
         });
