@@ -22,7 +22,7 @@ export default function ManageMenuPage() {
     const fetchProducts = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:5001/api/products/manage?search=${debouncedSearchTerm}`, { credentials: 'include' });
+            const res = await fetch(`/api/products/manage?search=${debouncedSearchTerm}`, { credentials: 'include' });
             if (!res.ok) throw new Error("Failed to fetch products");
             const data = await res.json();
             setProducts(data);

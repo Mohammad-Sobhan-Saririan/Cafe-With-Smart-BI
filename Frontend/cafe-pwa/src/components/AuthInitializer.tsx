@@ -13,7 +13,7 @@ export function AuthInitializer() {
             hasInitialized.current = true;
             const checkAuthStatus = async () => {
                 try {
-                    const res = await fetch('http://localhost:5001/api/auth/profile', { credentials: 'include' });
+                    const res = await fetch('/api/auth/profile', { credentials: 'include' });
                     if (res.ok) {
                         const { user } = await res.json();
                         setUser(user); // Sets status to 'authenticated'

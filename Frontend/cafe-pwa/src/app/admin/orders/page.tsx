@@ -54,7 +54,7 @@ export default function ManageOrdersPage() {
                 sortBy: sortConfig.key,
                 sortOrder: sortConfig.direction,
             });
-            const res = await fetch(`http://localhost:5001/api/admin/orders?${params.toString()}`, { credentials: 'include' });
+            const res = await fetch(`/api/admin/orders?${params.toString()}`, { credentials: 'include' });
             if (!res.ok) throw new Error("Failed to fetch orders");
             const data = await res.json();
             setOrders(data.orders || []);
@@ -89,7 +89,7 @@ export default function ManageOrdersPage() {
 
     const handleStatusUpdate = async (orderId: string, status: Order['status']) => {
         try {
-            await fetch(`http://localhost:5001/api/admin/orders/${orderId}/status`, {
+            await fetch(`/api/admin/orders/${orderId}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ status }),
             });

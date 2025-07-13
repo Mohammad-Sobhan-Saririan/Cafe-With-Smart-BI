@@ -29,7 +29,7 @@ export const AccountDetails = () => {
     const handleSaveChanges = async () => {
         // setIsLoading(true);
         try {
-            const res = await fetch('http://localhost:5001/api/users/profile', {
+            const res = await fetch('/api/users/profile', {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(formData),
             });
             const data = await res.json();

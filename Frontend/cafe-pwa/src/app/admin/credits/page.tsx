@@ -17,7 +17,7 @@ export default function ManageCreditsPage() {
     const handleUpdate = async (operation: 'set' | 'add', amount: string, filter?: object) => {
         setIsLoading(true);
         try {
-            const res = await fetch('http://localhost:5001/api/admin/credits/bulk-update', {
+            const res = await fetch('/api/admin/credits/bulk-update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

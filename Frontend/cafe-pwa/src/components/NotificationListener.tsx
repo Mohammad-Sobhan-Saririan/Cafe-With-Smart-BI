@@ -12,7 +12,7 @@ export const NotificationListener = () => {
         // Only try to connect if the user is authenticated
         if (authStatus === 'authenticated') {
             // The EventSource API is built into modern browsers
-            const eventSource = new EventSource('http://localhost:5001/api/events', {
+            const eventSource = new EventSource('/api/events', {
                 withCredentials: true, // This is crucial to send the auth cookie
             });
 

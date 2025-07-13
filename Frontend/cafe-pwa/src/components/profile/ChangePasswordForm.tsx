@@ -23,7 +23,7 @@ export const ChangePasswordForm = () => {
         setIsLoading(true);
 
         try {
-            const res = await fetch('http://localhost:5001/api/users/password', {
+            const res = await fetch('/api/users/password', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

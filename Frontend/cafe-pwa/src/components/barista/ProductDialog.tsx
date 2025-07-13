@@ -67,7 +67,7 @@ export const ProductDialog = ({ product, isOpen, onClose, onProductUpdate }: Pro
                 const uploadFormData = new FormData();
                 uploadFormData.append('image', imageFile);
 
-                const uploadRes = await fetch('http://localhost:5001/api/upload', {
+                const uploadRes = await fetch('/api/upload', {
                     method: 'POST',
                     credentials: 'include',
                     body: uploadFormData,
@@ -77,16 +77,16 @@ export const ProductDialog = ({ product, isOpen, onClose, onProductUpdate }: Pro
                 if (!uploadRes.ok) throw new Error(uploadData.message || 'Image upload failed.');
 
                 // 2. Add the new image URL to our product data
-                // if image url not start with http://localhost:5001/images add it
+                // if image url not start with /images add it
                 console.log(`uploadData.imageUrl ${uploadData.imageUrl}`)
-                const newImageUrl = `http://localhost:5001${uploadData.imageUrl}`;
+                const newImageUrl = `${uploadData.imageUrl}`;
                 updatedFormData.imageUrl = newImageUrl;
             }
 
             // 3. Now, submit the complete product data (with the new imageUrl if applicable)
             const url = isEditMode ? `/api/products/${product?.id}` : '/api/products';
             const method = isEditMode ? 'PUT' : 'POST';
-            const finalRes = await fetch(`http://localhost:5001${url}`, {
+            const finalRes = await fetch(`${url}`, {
                 method, headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(updatedFormData),
             });
 

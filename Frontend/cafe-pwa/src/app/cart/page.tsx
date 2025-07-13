@@ -34,7 +34,7 @@ export default function CartPage() {
         setIsPlacingOrder(true); // 1. Show the overlay immediately
 
         try {
-            const res = await fetch('http://localhost:5001/api/orders', {
+            const res = await fetch('/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

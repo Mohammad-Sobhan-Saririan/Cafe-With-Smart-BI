@@ -55,7 +55,7 @@ export const UserFormDialog = ({ user, isOpen, onClose, onUpdate }: UserFormDial
             const url = isEditMode ? `/api/admin/users/${user.id}` : '/api/admin/users';
             const method = isEditMode ? 'PUT' : 'POST';
 
-            const res = await fetch(`http://localhost:5001${url}`, {
+            const res = await fetch(`${url}`, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

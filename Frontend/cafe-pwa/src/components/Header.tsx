@@ -18,7 +18,7 @@ export const Header = () => {
 
     const handleLogout = async () => {
         try {
-            await fetch('http://localhost:5001/api/auth/logout', { method: 'POST', credentials: 'include' });
+            await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
         } catch (error) {
             console.error("Logout failed:", error);
         } finally {
