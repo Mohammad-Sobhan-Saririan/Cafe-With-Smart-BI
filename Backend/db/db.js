@@ -1,0 +1,81 @@
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
+import { nanoid } from 'nanoid'; // We can still use this for IDs
+
+// This is a top-level async function that we'll call to initialize the DB
+async function setup() {
+  const db = await open({
+    filename: './cafe.sqlite',
+    driver: sqlite3.Database
+  });
+
+  // Keep the products table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS products (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      price INTEGER NOT NULL,
+      category TEXT NOT NULL,
+      imageUrl TEXT,
+      rating REAL DEFAULT 0,
+      maxOrderPerUser INTEGER DEFAULT 5,
+      description TEXT,
+      stock INTEGER DEFAULT 100,
+      isDisabled BOOLEAN DEFAULT 0
+    )
+  `);
+
+  // Inside the setup() function
+
+  // 1. Modify the users table
+  await db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    phone TEXT,
+    country TEXT,
+    city TEXT,
+    age INTEGER,
+    position TEXT,
+    creditLimit INTEGER DEFAULT 1000000,
+    creditBalance INTEGER DEFAULT 1000000,
+    role TEXT NOT NULL DEFAULT 'user',
+    employeeNumber TEXT UNIQUE
+  )
+`);
+
+  // 2. Modify the orders table
+  await db.exec(`
+  CREATE TABLE IF NOT EXISTS orders (
+    id TEXT PRIMARY KEY,
+    userId TEXT,
+    items TEXT NOT NULL,
+    totalAmount INTEGER NOT NULL,
+    status TEXT DEFAULT 'Pending',
+    priority INTEGER DEFAULT 1, -- ADD THIS LINE (e.g., 1=Normal, 2=High)
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users (id)
+  )
+`);
+
+  await db.exec(`
+  CREATE TABLE IF NOT EXISTS configs (
+    feature TEXT PRIMARY KEY,
+    isEnabled BOOLEAN NOT NULL
+  )
+`);
+
+  await db.run(
+    `INSERT OR IGNORE INTO configs (feature, isEnabled) VALUES (?, ?)`,
+    ['creditSystem', 0] // 0 for false
+  );
+
+  return { db, nanoid };
+}
+
+// Call the setup function and export the promise it returns
+const dbPromise = setup();
+
+export { dbPromise };

@@ -1,0 +1,39 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Users, Package, LayoutDashboard, ChartNoAxesCombined } from "lucide-react";
+
+const navItems = [
+    { href: "/admin", label: "داشبورد", icon: LayoutDashboard },
+    { href: "/admin/users", label: "کاربران", icon: Users },
+    { href: "/admin/orders", label: "سفارش‌ها", icon: Package },
+    { href: "/admin/dashboard", label: "گزارشات", icon: ChartNoAxesCombined },
+    //   { href: "/admin/credits", label: "اعتبارات", icon: CreditCard },
+];
+
+export const AdminSidebar = () => {
+    const pathname = usePathname();
+
+    return (
+        <Card className="bg-white/5 backdrop-blur-lg border border-white/10 p-4">
+            <nav className="flex flex-col space-y-2">
+                {navItems.map((item) => (
+                    <Button
+                        key={item.label}
+                        asChild
+                        variant={pathname === item.href ? "secondary" : "ghost"}
+                        className={`justify-start text-base p-6 text-white hover:text-white ${pathname === item.href ? "bg-[#E91227] hover:bg-red-700" : "hover:bg-white/10"}`}
+                    >
+                        <Link href={item.href}>
+                            <item.icon className="ml-2 h-5 w-5" />
+                            {item.label}
+                        </Link>
+                    </Button>
+                ))}
+            </nav>
+        </Card>
+    );
+};
