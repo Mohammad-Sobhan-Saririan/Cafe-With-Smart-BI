@@ -23,10 +23,13 @@ const app = express();
 
 // Middlewares
 // And REPLACE it with this:
+const allowedOrigins = ['http://localhost:3000', 'http://164.92.242.210'];
+
 app.use(cors({
-    origin: 'http://localhost:3000', // Allow requests ONLY from your frontend origin
-    credentials: true                 // Allow cookies and authorization headers
+    origin: allowedOrigins,
+    credentials: true
 }));
+
 app.use(express.json());
 app.use(express.static('public'));
 app.use(cookieParser()); // <-- ADD THIS LINE
