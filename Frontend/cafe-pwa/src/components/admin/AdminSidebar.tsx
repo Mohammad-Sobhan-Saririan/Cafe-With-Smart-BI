@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Users, Package, CreditCard, LayoutDashboard, FileText, ChevronDown } from "lucide-react";
+import { Users, Package, LayoutDashboard, FileText, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [

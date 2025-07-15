@@ -20,7 +20,13 @@ export default function SavedReportsPage() {
             if (!res.ok) throw new Error("Failed to fetch saved reports.");
             const data = await res.json();
             setReports(data);
-        } catch (error: any) { toast.error(error.message); }
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("خطایی رخ داده است!");
+            }
+        }
         finally { setLoading(false); }
     }, []);
 
@@ -34,8 +40,12 @@ export default function SavedReportsPage() {
             toast.success("Report deleted successfully.");
             // This will now work correctly and refresh the list
             fetchSavedReports();
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("خطایی رخ داده است!");
+            }
         }
     };
 
@@ -74,10 +84,9 @@ export default function SavedReportsPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex-grow">
-                                {/* درخواست کاربر */}
                                 درخواست کاربر:
                                 <p className="text-sm text-white/80 border-r-2 border-indigo-400 pr-3 italic">
-                                    "{report.nl_query}"
+                                    {report.nl_query}
                                 </p>
                             </CardContent>
                             <CardFooter className="flex justify-end gap-2 border-t border-white/10 pt-4">

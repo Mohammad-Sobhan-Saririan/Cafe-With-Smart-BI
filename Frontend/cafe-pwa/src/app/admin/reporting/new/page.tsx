@@ -37,8 +37,12 @@ export default function ReportingWorkshopPage() {
             setReportData(data.results);
             setGeneratedSql(data.sqlQuery);
             toast.success("داده‌های گزارش با موفقیت دریافت شد.");
-        } catch (e: any) {
-            toast.error(e.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("خطایی رخ داده است!");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -68,8 +72,12 @@ export default function ReportingWorkshopPage() {
             if (!res.ok) throw new Error(data.message);
             setChartConfig(data.chartConfig);
             toast.success("نمودار با موفقیت ساخته شد.");
-        } catch (e: any) {
-            toast.error(e.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("خطایی رخ داده است!");
+            }
         } finally {
             setIsChartLoading(false);
         }
@@ -91,8 +99,12 @@ export default function ReportingWorkshopPage() {
                 }),
             });
             toast.success("گزارش با موفقیت ذخیره شد!");
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("خطایی رخ داده است!");
+            }
         } finally {
             setIsSaving(false);
         }
