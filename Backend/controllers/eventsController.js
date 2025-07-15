@@ -1,9 +1,8 @@
 import { addClient, removeClient } from '../services/sseService.js';
 
 export const eventsHandler = (req, res) => {
-    const userId = req.user.id; // From our 'protect' middleware
+    const userId = req.user.id;
 
-    // Set headers for SSE
     const headers = {
         'Content-Type': 'text/event-stream',
         'Connection': 'keep-alive',
@@ -11,14 +10,17 @@ export const eventsHandler = (req, res) => {
     };
     res.writeHead(200, headers);
 
-    // Add this client to our list
     addClient(userId, res);
 
-    // Send a confirmation message
-    res.write('data: {"message": "Connection established"}\n\n');
+    // --- NEW: Heartbeat Interval ---
+    // Send a comment every 25 seconds to keep the connection alive
+    const heartbeatInterval = setInterval(() => {
+        res.write(': heartbeat\n\n');
+    }, 25000);
 
-    // When the client closes the connection, remove them from our list
     req.on('close', () => {
+        // When the client disconnects, clear the interval and remove the client
+        clearInterval(heartbeatInterval);
         removeClient(userId);
     });
 };

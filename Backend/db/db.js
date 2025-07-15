@@ -67,6 +67,22 @@ async function setup() {
   )
 `);
 
+  await db.exec(`
+  CREATE TABLE IF NOT EXISTS reports (
+    id TEXT PRIMARY KEY,
+    adminId TEXT NOT NULL,
+    name TEXT NOT NULL,
+    nl_query TEXT,
+    sql_query TEXT NOT NULL,
+    viz_type TEXT DEFAULT 'table',
+    -- ADD THE FOLLOWING TWO COLUMNS --
+    chart_config TEXT, -- Will store the chart settings as a JSON string
+    conversation_history TEXT, -- Will store the chat history as a JSON string
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (adminId) REFERENCES users (id)
+  )
+`);
+
   await db.run(
     `INSERT OR IGNORE INTO configs (feature, isEnabled) VALUES (?, ?)`,
     ['creditSystem', 0] // 0 for false

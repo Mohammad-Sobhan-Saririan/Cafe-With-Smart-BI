@@ -25,3 +25,26 @@ export interface Order {
     createdAt: string;
     userName: string | null;
 }
+
+export type ReportDataRow = Record<string, string | number | null>;
+
+// Represents the configuration for a Recharts graph
+export interface ChartConfig {
+    chartType: 'bar' | 'line' | 'pie';
+    xAxisKey: string;
+    dataKeys: string[];
+    colors: string[];
+    // THIS WAS THE MISSING PIECE: The data the chart will display
+    data?: ReportDataRow[];
+}
+
+// Represents a saved report object from the database
+export interface SavedReport {
+    id: string;
+    name: string;
+    nl_query: string;
+    sql_query: string;
+    chart_config: string;
+    conversation_history: string;
+    createdAt: string;
+}

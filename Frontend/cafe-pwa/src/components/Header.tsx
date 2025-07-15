@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
-import { Shield, ShoppingBag, User as UserIcon, LogOut, LogIn, Coffee } from 'lucide-react';
+import { Shield, ShoppingCart, User as UserIcon, LogOut, LogIn, Coffee } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import CafeLogo from './icons/CafeLogo'; // Assuming you have this component
@@ -46,24 +46,27 @@ export const Header = () => {
                     <div className="flex items-center gap-2">
 
                         {/* Cart Button */}
-                        <Button asChild variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-white/10">
+                        <Button asChild variant="ghost" className="relative h-12 px-4 rounded-full hover:bg-white/10 text-white font-semibold hover:text-white">
                             <Link href="/cart" aria-label="Shopping Cart">
-                                <ShoppingBag className="h-6 w-6 text-white" />
-                                {totalItems > 0 && (
-                                    <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-[#E91227] text-xs font-bold text-white">
-                                        {totalItems}
-                                    </span>
-                                )}
+                                <div className="flex items-center gap-2">
+                                    <ShoppingCart className="h-6 w-6" />
+                                    {/* The text is hidden on the smallest screens to prevent crowding */}
+                                    <span className="hidden sm:inline">سبد خرید</span>
+                                    {totalItems > 0 && (
+                                        <span className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-[#E91227] text-xs font-bold">
+                                            {totalItems}
+                                        </span>
+                                    )}
+                                </div>
                             </Link>
                         </Button>
-
                         {/* Conditional Auth Button */}
                         {authStatus === 'authenticated' && user ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-10 w-10 rounded-full">
+                                    <Button variant="ghost" className="h-10 w-10 rounded-full hover:bg-white/10 transition-colors">
                                         <Avatar className="h-9 w-9">
-                                            <AvatarFallback className="bg-white/20 text-white font-bold">
+                                            <AvatarFallback className="bg-white/30 text-white font-bold hover:scale-110 transition-transform">
                                                 {user.name.charAt(0).toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
@@ -75,7 +78,7 @@ export const Header = () => {
                                 >
                                     <DropdownMenuLabel className="font-normal" style={{ direction: 'rtl' }}>
                                         <div className="flex flex-col space-y-1 p-1">
-                                            <p className="text-sm font-medium leading-none">نام کاربری: {user.name}</p>
+                                            <p className="text-sm font-medium leading-none mb-3">نام کاربری: {user.name}</p>
                                             <p className="text-xs leading-none text-white/70">شماره کارمندی: {user.employeeNumber}</p>
                                         </div>
                                     </DropdownMenuLabel>

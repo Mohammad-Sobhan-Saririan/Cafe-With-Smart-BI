@@ -1,10 +1,21 @@
 import express from 'express';
-import { runReportQuery } from '../controllers/reportingController.js';
+// Add the new controller functions
+import { runReportQuery, saveReport, getChartConfigForData, refineChart, deleteReport, getSavedReports } from '../controllers/reportingController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
+
 
 const router = express.Router();
 
-// This route is protected for admins only
-router.post('/run', runReportQuery);
+// Existing route
+
+router.post('/run', protect, admin, runReportQuery);
+router.post('/generate-chart', protect, admin, getChartConfigForData); // New
+router.post('/refine-chart', protect, admin, refineChart); // New
+
+
+router.post('/save', protect, admin, saveReport);
+router.get('/saved', protect, admin, getSavedReports);
+router.delete('/:id', protect, admin, deleteReport);
+
 
 export default router;

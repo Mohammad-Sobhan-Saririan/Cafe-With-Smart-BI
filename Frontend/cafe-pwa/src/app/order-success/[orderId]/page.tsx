@@ -99,7 +99,7 @@ export default function OrderSuccessPage() {
     return (
         // Main container with responsive padding
         <div className="container mx-auto max-w-2xl py-8 sm:py-12 px-4 text-white" style={{ direction: 'rtl', marginTop: '-14vh' }}>
-            <div className="flex flex-col items-center text-center">
+            <div className="flex flex-col items-center text-center mt-10 sm:mt-0">
                 {/* Lottie player with responsive size */}
                 <Player
                     autoplay

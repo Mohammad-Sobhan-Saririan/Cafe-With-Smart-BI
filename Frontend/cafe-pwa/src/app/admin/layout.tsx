@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     return (
         <div className="container mx-auto p-4 sm:p-6 text-white">
-            <h1 className="text-4xl font-bold mb-8">پنل مدیریت</h1>
+            <h1 className="text-3xl font-bold mb-8 lg:text-4xl">پنل مدیریت</h1>
             <div className="flex flex-col md:flex-row gap-8 items-start">
                 <aside className="w-full md:w-1/4 lg:w-1/5 md:sticky top-24">
                     <AdminSidebar />
