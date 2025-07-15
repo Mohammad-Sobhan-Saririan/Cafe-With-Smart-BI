@@ -79,7 +79,7 @@ export const ProductDialog = ({ product, isOpen, onClose, onProductUpdate }: Pro
                 // 2. Add the new image URL to our product data
                 // if image url not start with /images add it
                 console.log(`uploadData.imageUrl ${uploadData.imageUrl}`)
-                const newImageUrl = `${uploadData.imageUrl}`;
+                const newImageUrl = `http://localhost:5001${uploadData.imageUrl}`;
                 updatedFormData.imageUrl = newImageUrl;
             }
 
