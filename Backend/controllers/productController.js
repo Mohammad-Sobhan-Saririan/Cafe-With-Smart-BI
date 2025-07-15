@@ -36,7 +36,6 @@ export const getManageableProducts = async (req, res) => {
 
 // POST /api/products (Protected - create a new product)
 export const createProduct = async (req, res) => {
-    // 1. We now correctly accept 'isDisabled' and other fields from the request body
     const { name, price, category, description, stock, imageUrl, isDisabled } = req.body;
 
     // Basic validation
@@ -45,20 +44,23 @@ export const createProduct = async (req, res) => {
     }
 
     try {
-        const { db, nanoid } = await dbPromise;
+        const { db } = await dbPromise;
+
+        // Get the last product ID and increment it for the new product
+        const lastProduct = await db.get('SELECT id FROM products ORDER BY id DESC LIMIT 1');
+        const newId = lastProduct ? lastProduct.id + 1 : 1;
+
         const newProduct = {
-            id: nanoid(),
+            id: newId,
             name,
             price,
             category,
             description,
             stock,
             imageUrl: imageUrl || null,
-            // 2. We use the 'isDisabled' value from the form, converting it to a boolean
             isDisabled: !!isDisabled
         };
 
-        // 3. The INSERT statement now includes the correct isDisabled value
         await db.run(
             `INSERT INTO products (id, name, price, category, description, stock, imageUrl, isDisabled) 
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -70,7 +72,7 @@ export const createProduct = async (req, res) => {
                 newProduct.description,
                 newProduct.stock,
                 newProduct.imageUrl,
-                newProduct.isDisabled ? 1 : 0 // Save as 1 for true, 0 for false
+                newProduct.isDisabled ? 1 : 0
             ]
         );
         res.status(201).json({ message: 'محصول با موفقیت ایجاد شد', product: newProduct });
