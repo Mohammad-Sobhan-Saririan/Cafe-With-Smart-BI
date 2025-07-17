@@ -35,7 +35,7 @@ export const AccountDetails = () => {
     useEffect(() => {
         const fetchFloors = async () => {
             try {
-                const res = await fetch('http://localhost:5001/api/floors');
+                const res = await fetch('/api/floors');
                 if (res.ok) {
                     setFloors(await res.json());
                 }
@@ -60,7 +60,7 @@ export const AccountDetails = () => {
     const handleSaveChanges = async () => {
         // setIsLoading(true);
         try {
-            const res = await fetch('http://localhost:5001/api/users/profile', {
+            const res = await fetch('/api/users/profile', {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                 // We send the entire formData, which now includes the new defaultFloorId
                 body: JSON.stringify(formData),

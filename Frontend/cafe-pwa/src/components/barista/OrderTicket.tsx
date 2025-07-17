@@ -23,7 +23,7 @@ export const OrderTicket = ({ order, onUpdate, status }: OrderTicketProps) => {
 
     const handleStatusUpdate = async (status: 'Completed' | 'Cancelled') => {
         try {
-            await fetch(`http://localhost:5001/api/admin/orders/${order.id}/status`, {
+            await fetch(`/api/admin/orders/${order.id}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

@@ -18,7 +18,7 @@ export default function ManageFloorsPage() {
     const fetchFloors = useCallback(async () => {
 
         try {
-            const res = await fetch('http://localhost:5001/api/floors', { credentials: 'include' });
+            const res = await fetch('/api/floors', { credentials: 'include' });
             if (!res.ok) throw new Error("Failed to fetch floors.");
             const data = await res.json();
             setFloors(data);
@@ -38,7 +38,7 @@ export default function ManageFloorsPage() {
         }
         setIsSubmitting(true);
         try {
-            const res = await fetch('http://localhost:5001/api/floors', {
+            const res = await fetch('/api/floors', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -65,7 +65,7 @@ export default function ManageFloorsPage() {
         setFloors(currentFloors => currentFloors.filter(f => f.id !== floorId));
 
         try {
-            const res = await fetch(`http://localhost:5001/api/floors/${floorId}`, {
+            const res = await fetch(`/api/floors/${floorId}`, {
                 method: 'DELETE',
                 credentials: 'include'
             });

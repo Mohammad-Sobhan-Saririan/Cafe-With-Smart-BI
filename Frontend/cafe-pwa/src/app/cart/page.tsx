@@ -40,7 +40,7 @@ export default function CartPage() {
     useEffect(() => {
         // Fetch the list of available floors when the page loads
         const fetchFloors = async () => {
-            const res = await fetch('http://localhost:5001/api/floors');
+            const res = await fetch('/api/floors');
             const data = await res.json();
             setFloors(data);
             // If user is logged in and has a default floor, pre-select it
@@ -58,7 +58,7 @@ export default function CartPage() {
         setIsPlacingOrder(true); // 1. Show the overlay immediately
 
         try {
-            const res = await fetch('http://localhost:5001/api/orders', {
+            const res = await fetch('/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

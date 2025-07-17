@@ -52,7 +52,7 @@ export const UserFormDialog = ({ user, isOpen, onClose, onUpdate }: UserFormDial
     const handleSubmit = async () => {
         setIsLoading(true);
         try {
-            const url = isEditMode ? `http://localhost:5001/api/admin/users/${user.id}` : 'http://localhost:5001/api/admin/users';
+            const url = isEditMode ? `/api/admin/users/${user.id}` : '/api/admin/users';
             const method = isEditMode ? 'PUT' : 'POST';
 
             const res = await fetch(`${url}`, {

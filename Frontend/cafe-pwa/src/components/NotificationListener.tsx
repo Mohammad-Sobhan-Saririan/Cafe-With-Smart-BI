@@ -34,7 +34,7 @@ export const NotificationListener = () => {
         let eventSource: EventSource | null = null;
 
         const connect = () => {
-            eventSource = new EventSource('http://localhost:5001/api/events', {
+            eventSource = new EventSource('/api/events', {
                 withCredentials: true,
             });
 

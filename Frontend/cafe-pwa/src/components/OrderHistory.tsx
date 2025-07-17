@@ -64,7 +64,7 @@ export const OrderHistory = () => {
             try {
                 setLoading(true);
                 // Add credentials: 'include' to the fetch call
-                const res = await fetch('http://localhost:5001/api/orders', {
+                const res = await fetch('/api/orders', {
                     credentials: 'include'
                 });
                 if (!res.ok) throw new Error('Failed to fetch orders');
