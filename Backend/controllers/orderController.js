@@ -102,7 +102,7 @@ export const createOrder = async (req, res) => {
         );
 
         await db.exec('COMMIT');
-        res.status(201).json({ message: 'سفارش با موفقیت ثبت شد!', order: newOrder });
+        res.status(201).json({ message: 'سفارش با موفقیت ثبت شد!', order: newOrder, CreditSystemEnabled: isCreditSystemEnabled });
 
     } catch (error) {
         await db.exec('ROLLBACK');

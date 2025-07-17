@@ -68,12 +68,16 @@ export default function CartPage() {
                 const errorData = await res.json();
                 throw new Error(errorData.message || 'مشکلی در ثبت سفارش بوجود آمده است.');
             }
-
-            const { order } = await res.json();
+            const { order, CreditSystemEnabled } = await res.json();
 
             // On success:
             toast.success(`سفارش #${order.id} با موفقیت ثبت شد!`);
             clearCart();
+            // update user credit balance if credit system is enabled
+            if (CreditSystemEnabled && user) {
+                const updatedUser = { ...user, creditBalance: user.creditBalance - total };
+                useAuthStore.setState({ user: updatedUser }); // Update the global user state
+            }
 
             // Wait 2 seconds so the user can see the success message, then redirect.
             setTimeout(function () {
