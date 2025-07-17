@@ -23,7 +23,8 @@ export const getAllUsers = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     const { id } = req.params;
-    const { name, email, role, position, creditLimit, creditBalance, employeeNumber } = req.body;
+    let { name, email, role, position, creditLimit, creditBalance, employeeNumber } = req.body;
+
     try {
         const { db } = await dbPromise;
 
@@ -35,6 +36,10 @@ export const updateUser = async (req, res) => {
 
         if (existingUser) {
             return res.status(400).json({ message: 'این شماره کارمندی قبلا ثبت شده است.' });
+        }
+
+        if (creditLimit < creditBalance) {
+            creditBalance = creditLimit; // Ensure creditBalance does not exceed creditLimit
         }
 
         // Proceed with the update if no conflict is found
