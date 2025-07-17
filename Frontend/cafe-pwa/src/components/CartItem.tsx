@@ -39,7 +39,7 @@ export const CartItem = ({ item }: CartItemProps) => {
                         size="icon"
                         variant="ghost"
                         className="h-8 w-8 md:h-9 md:w-9 rounded-full"
-                        onClick={() => increaseQuantity(item.id)}
+                        onClick={() => item.id && increaseQuantity(item.id)}
                         disabled={item.quantity >= item.stock}
                     >
                         <Plus size={16} />
@@ -49,7 +49,7 @@ export const CartItem = ({ item }: CartItemProps) => {
                         size="icon"
                         variant="ghost"
                         className="h-8 w-8 md:h-9 md:w-9 rounded-full"
-                        onClick={() => decreaseQuantity(item.id)}
+                        onClick={() => item.id && decreaseQuantity(item.id)}
                     >
                         <Minus size={16} />
                     </Button>
@@ -60,7 +60,7 @@ export const CartItem = ({ item }: CartItemProps) => {
                     size="sm"
                     variant="ghost"
                     className="text-red-500/70 hover:text-red-500 h-6 px-2 text-xs"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => item.id && removeFromCart(item.id)}
                 >
                     حذف
                     <Trash2 size={14} className="ml-1" />
