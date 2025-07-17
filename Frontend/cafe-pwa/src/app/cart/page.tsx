@@ -20,9 +20,11 @@ import { Floor } from '@/types'; // Ensure this import matches your types file
 import { glassInputStyle } from '@/components/admin/UserFormDialog';
 
 
-const ORGANIZATION_LAT = 35.798784201925315; // Example: Tehran
-const ORGANIZATION_LON = 51.47636585505412
-
+// const ORGANIZATION_LAT = 35.798784201925315; // Example: Tehran
+// const ORGANIZATION_LON = 51.47636585505412
+// 32.33898854094914, 51.50619575284041
+const ORGANIZATION_LAT = 32.33898854094914; // Example: Tehran
+const ORGANIZATION_LON = 51.50619575284041; // Example: Tehran
 const ALLOWED_RADIUS_METERS = 500; // e.g., 500 meters
 
 export default function CartPage() {
@@ -54,7 +56,7 @@ export default function CartPage() {
     useEffect(() => {
         // Fetch the list of available floors when the page loads
         const fetchFloors = async () => {
-            const res = await fetch('http://localhost:5001/api/floors');
+            const res = await fetch('/api/floors');
             const data = await res.json();
             setFloors(data);
             // If user is logged in and has a default floor, pre-select it
@@ -85,7 +87,7 @@ export default function CartPage() {
         setIsPlacingOrder(true); // 1. Show the overlay immediately
 
         try {
-            const res = await fetch('http://localhost:5001/api/orders', {
+            const res = await fetch('/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
