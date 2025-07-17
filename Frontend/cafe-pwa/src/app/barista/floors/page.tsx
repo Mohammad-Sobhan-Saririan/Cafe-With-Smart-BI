@@ -22,8 +22,12 @@ export default function ManageFloorsPage() {
             if (!res.ok) throw new Error("Failed to fetch floors.");
             const data = await res.json();
             setFloors(data);
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("An unknown error occurred.");
+            }
         } finally {
             setLoading(false);
         }
@@ -50,8 +54,12 @@ export default function ManageFloorsPage() {
             toast.success(`طبقه '${newFloorName}' با موفقیت اضافه شد.`);
             setNewFloorName('');
             fetchFloors(); // Refresh the list
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("خطایی رخ داده است!");
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -71,7 +79,7 @@ export default function ManageFloorsPage() {
             });
             if (!res.ok) throw new Error("Deletion failed on the server.");
             toast.success("طبقه با موفقیت حذف شد.");
-        } catch (error) {
+        } catch {
             toast.error("خطا در حذف طبقه. بازگردانی لیست.");
             setFloors(originalFloors); // If deletion fails, restore the original list
         }

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, X, Edit, KeyRound, User as UserIcon, Mail, Phone, Building2, MapPin } from "lucide-react";
+import { Save, X, Edit, KeyRound } from "lucide-react";
 import { toast } from 'sonner';
 import type { User } from '@/types'; // Import User as a type
 import type { Floor } from '@/types'; // Import Floor type
@@ -70,8 +70,12 @@ export const AccountDetails = () => {
             setUser(data.user); // Update global state with the new user info (including defaultFloorName)
             toast.success("پروفایل با موفقیت بروز شد!");
             setIsEditing(false);
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("خطایی رخ داده است!");
+            }
         } finally {
             // setIsLoading(false);
         }

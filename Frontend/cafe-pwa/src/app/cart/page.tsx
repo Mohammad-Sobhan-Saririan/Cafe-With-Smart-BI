@@ -34,9 +34,6 @@ export default function CartPage() {
     const [floors, setFloors] = useState<Floor[]>([]);
     const [selectedFloorId, setSelectedFloorId] = useState(user?.defaultFloorId || ''); // Default to user's preferred floor if available
 
-    if (cart.length === 0 && !isPlacingOrder) {
-        return <EmptyCart />;
-    }
     useEffect(() => {
         // Fetch the list of available floors when the page loads
         const fetchFloors = async () => {
@@ -50,6 +47,10 @@ export default function CartPage() {
         };
         fetchFloors();
     }, [user]);
+
+    if (cart.length === 0 && !isPlacingOrder) {
+        return <EmptyCart />;
+    }
 
     const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
