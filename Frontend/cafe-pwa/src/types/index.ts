@@ -12,6 +12,7 @@ export interface User {
     creditLimit: number;
     creditBalance: number;
     password?: string; // Optional for forms
+    defaultFloorId?: number; // Optional, used for user preferences
 }
 
 export interface Product {
@@ -24,6 +25,7 @@ export interface Order {
     status: 'Pending' | 'Completed' | 'Cancelled';
     createdAt: string;
     userName: string | null;
+    deliveryFloorName: number | null;
 }
 
 export type ReportDataRow = Record<string, string | number | null>;
@@ -48,3 +50,9 @@ export interface SavedReport {
     conversation_history: string;
     createdAt: string;
 }
+
+export interface Floor { id: number; name: string; }
+
+export const statusTranslations: { [key in Order['status']]: string } = {
+    Pending: "در انتظار", Completed: "تکمیل شده", Cancelled: "لغو شده"
+};

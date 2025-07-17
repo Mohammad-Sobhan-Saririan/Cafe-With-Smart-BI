@@ -33,7 +33,7 @@ export const ChangePasswordDialog = ({ isOpen, onClose }: ChangePasswordDialogPr
         }
         setIsLoading(true);
         try {
-            const res = await fetch('/api/users/password', {
+            const res = await fetch('http://localhost:5001/api/users/password', {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ oldPassword, newPassword }),
             });
             const data = await res.json();

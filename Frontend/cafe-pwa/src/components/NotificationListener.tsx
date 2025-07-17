@@ -5,13 +5,21 @@ import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
 import { useCartStore } from '@/store/cartStore';
 
+const statusTranslations = (status: string): string => {
+    const translations: { [key: string]: string } = {
+        Pending: "در انتظار",
+        Completed: "تکمیل شده",
+        Cancelled: "لغو شده"
+    };
+    console.log("Translating status:", status);
+    return translations[status] || 'status';
+};
+
 export const NotificationListener = () => {
-    // We get the functions from the store, but not the state, to prevent re-renders
     const { authStatus } = useAuthStore();
     const removeItem = useCartStore((state) => state.removeItem);
-    const cartRef = useRef(useCartStore.getState().cart); // Use a ref to get the latest cart state inside the listener
+    const cartRef = useRef(useCartStore.getState().cart);
 
-    // Update the ref whenever the cart changes
     useEffect(() => {
         useCartStore.subscribe(
             (state) => (cartRef.current = state.cart)
@@ -23,43 +31,60 @@ export const NotificationListener = () => {
             return;
         }
 
-        // The EventSource API is built into modern browsers
-        const eventSource = new EventSource('/api/events', {
-            withCredentials: true,
-        });
+        let eventSource: EventSource | null = null;
 
-        eventSource.onopen = () => {
-            console.log("SSE connection established.");
-        };
+        const connect = () => {
+            eventSource = new EventSource('http://localhost:5001/api/events', {
+                withCredentials: true,
+            });
 
-        eventSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
+            eventSource.onopen = () => {
+                console.log("SSE connection established.");
+            };
 
-            if (data.type === 'ORDER_UPDATE') {
-                toast.info(`وضعیت سفارش شما بروز شد: ${data.status}`);
-            }
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
 
-            if (data.type === 'STOCK_DEPLETED') {
-                // Use the ref to get the most up-to-date cart
-                const itemInCart = cartRef.current.find(item => item.id === data.productId);
-                if (itemInCart) {
-                    removeItem(data.productId);
-                    toast.warning(`'${data.productName}' دیگر موجود نیست و از سبد شما حذف شد.`);
+                if (data.type === 'ORDER_UPDATE') {
+                    if (data.status === 'Cancelled') {
+                        toast.error(`سفارش ${data.orderId} لغو شد.`, {
+                            style: { backgroundColor: '#f8d7da', color: '#721c24' },
+                        });
+                    }
+                    else if (data.status === 'Completed') {
+                        toast.success(`سفارش ${data.orderId} با موفقیت تکمیل شد.`, {
+                            style: { backgroundColor: '#d4edda', color: '#155724' },
+                        });
+                    } else {
+                        toast.info(`سفارش ${data.orderId} در وضعیت: ${statusTranslations(data.status)}`, {
+                            style: { backgroundColor: 'fff3cd', color: '#856404' },
+                        });
+                    }
                 }
-            }
+
+                if (data.type === 'STOCK_DEPLETED') {
+                    const itemInCart = cartRef.current.find(item => item.id === data.productId);
+                    if (itemInCart) {
+                        removeItem(data.productId);
+                        toast.warning(`'${data.productName}' دیگر موجود نیست و از سبد شما حذف شد.`);
+                    }
+                }
+            };
+
+            eventSource.onerror = () => {
+                console.error('SSE connection error. Attempting to reconnect...');
+                eventSource?.close();
+                setTimeout(connect, 5000); // Retry connection after 5 seconds
+            };
         };
 
-        eventSource.onerror = () => {
-            // DO NOT close the connection here. The browser will handle reconnection automatically.
-            console.error('SSE connection error. The browser will attempt to reconnect.');
-        };
+        connect();
 
-        // This cleanup function is still important
         return () => {
-            eventSource.close();
+            eventSource?.close();
             console.log("SSE connection closed.");
         };
-    }, [authStatus, removeItem]); // The dependency array is now cleaner and more stable
+    }, [authStatus, removeItem]);
 
-    return null; // This component doesn't render any UI
+    return null;
 };

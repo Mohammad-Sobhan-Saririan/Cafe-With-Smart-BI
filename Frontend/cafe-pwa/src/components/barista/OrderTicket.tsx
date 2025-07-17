@@ -6,6 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { faIR } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
 import type { Order } from "@/types";
+import { statusTranslations } from "@/types";
 // Define the types for our order data
 interface OrderItem { id: string; name: string; quantity: number; price: number; }
 
@@ -14,9 +15,7 @@ interface OrderTicketProps {
     onUpdate: () => void;
     status: string;
 }
-const statusTranslations: { [key in Order['status']]: string } = {
-    Pending: "در انتظار", Completed: "تکمیل شده", Cancelled: "لغو شده"
-};
+
 const URGENCY_THRESHOLD_MINUTES = 60;
 
 export const OrderTicket = ({ order, onUpdate, status }: OrderTicketProps) => {
@@ -24,7 +23,7 @@ export const OrderTicket = ({ order, onUpdate, status }: OrderTicketProps) => {
 
     const handleStatusUpdate = async (status: 'Completed' | 'Cancelled') => {
         try {
-            await fetch(`/api/admin/orders/${order.id}/status`, {
+            await fetch(`http://localhost:5001/api/admin/orders/${order.id}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -54,6 +53,7 @@ export const OrderTicket = ({ order, onUpdate, status }: OrderTicketProps) => {
             // Add a pulse animation for urgent orders
         )}>
             <h3 className="font-bold text-lg text-white">{order.userName || 'سفارش مهمان'}</h3>
+
             {status != 'Pending' ? (
                 <div className={`flex items-center gap-1 ${status === 'Completed' ? 'text-green-400' : 'text-red-400'}`}>
                     {status === 'Completed' ? (
@@ -74,7 +74,11 @@ export const OrderTicket = ({ order, onUpdate, status }: OrderTicketProps) => {
                     <AlertTriangle size={14} />
                 </div>
             )}
-            <p className="text-xs text-white/60 mb-3">{timeAgo}</p>
+            <p className="text-xs text-white/60 mt-1 mb-2">{timeAgo}</p>
+            <div className="flex items-center gap-2 text-white/60  py-2 rounded-lg">
+                <span className="text-sm font-medium">محل تحویل:</span>
+                <span className="text-base sm:text-lg font-bold text-white">{order.deliveryFloorName || 'نامشخص'}</span>
+            </div>
             <p className="text-xs text-white/60 mb-3 flex items-center gap-1">
                 <span>شماره سفارش:</span>
                 <span>{order.id}</span>

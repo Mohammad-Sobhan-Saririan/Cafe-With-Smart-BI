@@ -7,10 +7,8 @@ import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useDebounce } from "@/hooks/useDebounce";
 import { toast } from "sonner";
+import { Order } from "@/types";
 
-interface Order {
-    id: string; items: string; status: 'Pending' | 'Completed' | 'Cancelled'; createdAt: string; userName: string | null;
-}
 
 export default function BaristaDashboardPage() {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -19,7 +17,7 @@ export default function BaristaDashboardPage() {
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
     const fetchOrders = useCallback(async () => {
-        const url = `/api/barista/orders?search=${debouncedSearchTerm}`;
+        const url = `http://localhost:5001/api/barista/orders?search=${debouncedSearchTerm}`;
         try {
             const res = await fetch(url, { credentials: 'include' });
             if (!res.ok) throw new Error("Failed to fetch orders");

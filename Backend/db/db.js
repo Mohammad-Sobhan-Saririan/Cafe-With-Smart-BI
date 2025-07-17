@@ -25,9 +25,28 @@ async function setup() {
     )
   `);
 
-  // Inside the setup() function
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS floors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE
+    )
+  `);
 
-  // 1. Modify the users table
+  await db.exec(`
+  CREATE TABLE IF NOT EXISTS orders (
+    id TEXT PRIMARY KEY,
+    userId TEXT,
+    items TEXT NOT NULL,
+    totalAmount INTEGER NOT NULL,
+    status TEXT DEFAULT 'Pending',
+    priority INTEGER DEFAULT 1, -- ADD THIS LINE (e.g., 1=Normal, 2=High)
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deliveryFloorId INTEGER REFERENCES floors(id),
+    FOREIGN KEY (userId) REFERENCES users (id)
+  )
+`);
+
+  // the users table
   await db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
@@ -42,24 +61,12 @@ async function setup() {
     creditLimit INTEGER DEFAULT 1000000,
     creditBalance INTEGER DEFAULT 1000000,
     role TEXT NOT NULL DEFAULT 'user',
-    employeeNumber TEXT UNIQUE
+    employeeNumber TEXT UNIQUE,
+    defaultFloorId INTEGER REFERENCES floors(id)
   )
 `);
 
   // 2. Modify the orders table
-  await db.exec(`
-  CREATE TABLE IF NOT EXISTS orders (
-    id TEXT PRIMARY KEY,
-    userId TEXT,
-    items TEXT NOT NULL,
-    totalAmount INTEGER NOT NULL,
-    status TEXT DEFAULT 'Pending',
-    priority INTEGER DEFAULT 1, -- ADD THIS LINE (e.g., 1=Normal, 2=High)
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userId) REFERENCES users (id)
-  )
-`);
-
   await db.exec(`
   CREATE TABLE IF NOT EXISTS configs (
     feature TEXT PRIMARY KEY,
@@ -82,6 +89,12 @@ async function setup() {
     FOREIGN KEY (adminId) REFERENCES users (id)
   )
 `);
+
+
+  await db.run(
+    `INSERT OR IGNORE INTO floors (id, name) VALUES (?, ?)`,
+    ['1', 'نیم طبقه']
+  );
 
   await db.run(
     `INSERT OR IGNORE INTO configs (feature, isEnabled) VALUES (?, ?)`,

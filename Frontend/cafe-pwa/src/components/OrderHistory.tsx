@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import type { CartItem } from '@/store/cartStore'; // Reuse CartItem type
 import { Loader2, Package, Calendar, Tag, BadgeCheck } from 'lucide-react';
 import { Order } from '@/types'; // Import Order type
+import { statusTranslations } from '@/types'; // Import status translations
 
 const OrderCard = ({ order }: { order: Order }) => {
     const items: CartItem[] = JSON.parse(order.items);
@@ -25,7 +26,7 @@ const OrderCard = ({ order }: { order: Order }) => {
                     <p className="font-bold text-lg">{items.reduce((total, item) => total + (item.price * item.quantity), 0).toLocaleString()} تومان</p>
                 </div>
                 <div>
-                    <p className="text-sm text-white/60 flex items-center gap-2"><BadgeCheck size={16} /> وضعیت</p>
+                    <p className="text-sm text-white/60 flex items-center gap-2 mb-1"><BadgeCheck size={16} /> وضعیت</p>
                     <span
                         className={`text-xs font-medium me-2 px-2.5 py-0.5 rounded-full ${order.status === 'Completed'
                             ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
@@ -34,7 +35,7 @@ const OrderCard = ({ order }: { order: Order }) => {
                                 : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                             }`}
                     >
-                        {order.status}
+                        {statusTranslations[order.status]}
                     </span>
                 </div>
             </div>
@@ -63,7 +64,7 @@ export const OrderHistory = () => {
             try {
                 setLoading(true);
                 // Add credentials: 'include' to the fetch call
-                const res = await fetch('/api/orders', {
+                const res = await fetch('http://localhost:5001/api/orders', {
                     credentials: 'include'
                 });
                 if (!res.ok) throw new Error('Failed to fetch orders');

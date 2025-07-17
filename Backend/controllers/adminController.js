@@ -17,7 +17,7 @@ export const getAllUsers = async (req, res) => {
         const users = await db.all(sql, params);
         res.json(users);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'خطای سرور', error: error.message });
     }
 };
 
@@ -34,7 +34,7 @@ export const updateUser = async (req, res) => {
         );
 
         if (existingUser) {
-            return res.status(400).json({ message: 'Employee number already exists for another user.' });
+            return res.status(400).json({ message: 'این شماره کارمندی قبلا ثبت شده است.' });
         }
 
         // Proceed with the update if no conflict is found
@@ -45,9 +45,9 @@ export const updateUser = async (req, res) => {
             [name, email, role, position, creditLimit, creditBalance, employeeNumber, id]
         );
 
-        res.status(200).json({ message: 'User updated successfully.' });
+        res.status(200).json({ message: 'کاربر با موفقیت به‌روزرسانی شد.' });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'خطای سرور:', error: error.message });
     }
 };
 
@@ -121,7 +121,7 @@ export const getAllOrders = async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'خطای سرور:', error: error.message });
     }
 };
 export const updateOrderStatus = async (req, res) => {
@@ -129,7 +129,7 @@ export const updateOrderStatus = async (req, res) => {
     const { status } = req.body;
 
     if (!status || !['Pending', 'Completed', 'Cancelled'].includes(status)) {
-        return res.status(400).json({ message: 'A valid status is required.' });
+        return res.status(400).json({ message: 'وضعیت نامعتبر است. لطفا یکی از وضعیت‌های معتبر را انتخاب کنید.' });
     }
 
     const { db } = await dbPromise;
@@ -143,7 +143,7 @@ export const updateOrderStatus = async (req, res) => {
 
         if (!order) {
             await db.exec('ROLLBACK');
-            return res.status(404).json({ message: 'Order not found' });
+            return res.status(404).json({ message: 'سفارش یافت نشد.' });
         }
 
         // --- RESTOCK LOGIC ---
@@ -170,12 +170,12 @@ export const updateOrderStatus = async (req, res) => {
             sendEventToUser(order.userId, { type: 'ORDER_UPDATE', orderId: id, status: status });
         }
 
-        res.status(200).json({ message: 'Order status updated successfully.' });
+        res.status(200).json({ message: 'وضعیت سفارش با موفقیت به‌روزرسانی شد.', orderId: id, newStatus: status });
 
     } catch (error) {
         // If any error occurred, cancel everything
         await db.exec('ROLLBACK');
-        res.status(500).json({ message: 'Server error during transaction', error: error.message });
+        res.status(500).json({ message: 'خطای سرور هنگام به‌روزرسانی وضعیت سفارش:', error: error.message });
     }
 };
 
@@ -184,12 +184,12 @@ export const bulkUpdateCredits = async (req, res) => {
 
     // Validate input
     if (!amount || !operation || !['set', 'add'].includes(operation)) {
-        return res.status(400).json({ message: 'Invalid amount or operation specified.' });
+        return res.status(400).json({ message: 'لطفا مقدار و عملیات معتبر را وارد کنید.' });
     }
 
     const numericAmount = parseInt(amount, 10);
     if (isNaN(numericAmount)) {
-        return res.status(400).json({ message: 'Amount must be a valid number.' });
+        return res.status(400).json({ message: 'میزان اعتبار باید یک مقدار معتبر باشد.' });
     }
 
     try {
@@ -213,10 +213,10 @@ export const bulkUpdateCredits = async (req, res) => {
         // Execute the dynamic query
         const result = await db.run(sql, params);
 
-        res.status(200).json({ message: `Successfully updated ${result.changes} users.` });
+        res.status(200).json({ message: `با موفقیت ${result.changes} کاربر به‌روزرسانی شد.` });
 
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'خطای سرور:', error: error.message });
     }
 };
 export const createUser = async (req, res) => {
@@ -224,7 +224,7 @@ export const createUser = async (req, res) => {
     const { name, email, password, employeeNumber, role, position, creditLimit } = req.body;
 
     if (!name || !email || !password || !employeeNumber || !role) {
-        return res.status(401).json({ message: 'Please provide all required fields.' });
+        return res.status(401).json({ message: 'لطفا همه فیلدهای مورد نیاز را پر کنید.' });
     }
 
     try {
@@ -232,7 +232,7 @@ export const createUser = async (req, res) => {
 
         const existingUser = await db.get('SELECT * FROM users WHERE email = ? OR employeeNumber = ?', [email, employeeNumber]);
         if (existingUser) {
-            return res.status(400).json({ message: 'User with this email or employee number already exists.' });
+            return res.status(400).json({ message: 'کاربری با این ایمیل یا شماره کارمندی وجود دارد.' });
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -250,9 +250,44 @@ export const createUser = async (req, res) => {
             [newUser.id, newUser.name, newUser.email, newUser.password, newUser.employeeNumber, newUser.role, newUser.position, newUser.creditLimit, newUser.creditBalance]
         );
 
-        res.status(201).json({ message: 'User created successfully!' });
+        res.status(201).json({ message: 'کاربر با موفقیت ایجاد شد.', userId: newUser.id });
 
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'خطای سرور:', error: error.message });
     }
 };
+
+export const getCreditSystemStatus = async (req, res) => {
+    try {
+        const { db } = await dbPromise;
+        const config = await db.get("SELECT isEnabled FROM configs WHERE feature = 'creditSystem'");
+        if (!config) {
+            return res.status(404).json({ message: 'سیستم اعتبار یافت نشد.' });
+        }
+        res.status(200).json({ isEnabled: config.isEnabled });
+    } catch (error) {
+        res.status(500).json({ message: 'خطای سرور:', error: error.message });
+    }
+};
+
+export const changeCreditSystemStatus = async (req, res) => {
+    const { isEnabled } = req.body;
+
+    if (typeof isEnabled !== 'boolean') {
+        return res.status(400).json({ message: 'لطفا وضعیت اعتبار را به صورت صحیح وارد کنید.' });
+    }
+
+    try {
+        const { db } = await dbPromise;
+
+        await db.run(
+            `UPDATE configs SET isEnabled = ? WHERE feature = 'creditSystem'`,
+            [isEnabled ? 1 : 0]
+        );
+
+        res.status(200).json({ message: `سیستم اعتبار ${isEnabled ? 'فعال' : 'غیرفعال'} شد.` });
+
+    } catch (error) {
+        res.status(500).json({ message: 'خطای سرور:', error: error.message });
+    }
+}

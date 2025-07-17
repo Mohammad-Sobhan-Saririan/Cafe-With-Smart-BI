@@ -8,11 +8,12 @@ export const getDashboardOrders = async (req, res) => {
         const { db } = await dbPromise;
 
         let sql = `
-      SELECT 
-        o.id, o.items, o.status, o.createdAt, u.name as userName
-      FROM orders o
-      LEFT JOIN users u ON o.userId = u.id
-    `;
+        SELECT 
+          o.id, o.items, o.status, o.createdAt, u.name as userName, f.name as deliveryFloorName
+        FROM orders o
+        LEFT JOIN users u ON o.userId = u.id
+        LEFT JOIN floors f ON o.deliveryFloorId = f.id
+      `;
         const params = [];
 
         // 2. If there is a search term, add a WHERE clause to filter the results

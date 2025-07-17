@@ -12,7 +12,7 @@ import userRoutes from './routes/userRoutes.js'; // 1. Import the new routes
 import baristaRoutes from './routes/baristaRoutes.js'; // 1. Import the new barista routes
 import uploadRoutes from './routes/uploadRoutes.js'; // 1. Import the new routes
 import reportingRoutes from './routes/reportingRoutes.js'; // Import reporting routes
-
+import floorRoutes from './routes/floorRoutes.js';
 
 
 
@@ -45,7 +45,7 @@ app.use('/api/users', userRoutes); // 2. Add the new user routes
 app.use('/api/barista', baristaRoutes); // 2. Add the new barista routes
 app.use('/api/upload', uploadRoutes);
 app.use('/api/reports', reportingRoutes); // Add this line
-
+app.use('/api/floors', floorRoutes);
 
 
 // Serve static files from the images directory

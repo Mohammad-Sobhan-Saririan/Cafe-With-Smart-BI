@@ -12,7 +12,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { toast } from "sonner";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { SortableHeader } from "@/components/admin/SortableHeader";
-
+import { statusTranslations } from "@/types"; // Import the status translations
 interface Order {
     id: string;
     userName: string | null;
@@ -27,9 +27,7 @@ const statusVariantMap: { [key in Order['status']]: 'default' | 'secondary' | 'd
     Cancelled: "destructive",
 };
 
-const statusTranslations: { [key in Order['status']]: string } = {
-    Pending: "در انتظار", Completed: "تکمیل شده", Cancelled: "لغو شده"
-};
+
 const statuses: Order['status'][] = ['Pending', 'Completed', 'Cancelled'];
 
 export default function ManageOrdersPage() {
@@ -54,7 +52,7 @@ export default function ManageOrdersPage() {
                 sortBy: sortConfig.key,
                 sortOrder: sortConfig.direction,
             });
-            const res = await fetch(`/api/admin/orders?${params.toString()}`, { credentials: 'include' });
+            const res = await fetch(`http://localhost:5001/api/admin/orders?${params.toString()}`, { credentials: 'include' });
             if (!res.ok) throw new Error("Failed to fetch orders");
             const data = await res.json();
             setOrders(data.orders || []);
@@ -89,7 +87,7 @@ export default function ManageOrdersPage() {
 
     const handleStatusUpdate = async (orderId: string, status: Order['status']) => {
         try {
-            await fetch(`/api/admin/orders/${orderId}/status`, {
+            await fetch(`http://localhost:5001/api/admin/orders/${orderId}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ status }),
             });

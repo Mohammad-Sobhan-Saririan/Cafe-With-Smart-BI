@@ -15,8 +15,10 @@ export const getUserOrders = async (req, res) => {
 
 // Create a new order
 export const createOrder = async (req, res) => {
-    const { items, totalAmount, employeeNumber } = req.body;
-
+    const { items, totalAmount, employeeNumber, deliveryFloorId } = req.body; // Get deliveryFloorId
+    if (!deliveryFloorId) {
+        return res.status(400).json({ message: 'لطفا طبقه تحویل را انتخاب کنید.' });
+    }
     if (!items || items.length === 0) {
         return res.status(400).json({ message: 'امکان ثبت سفارش خالی وجود ندارد.' });
     }
@@ -74,7 +76,15 @@ export const createOrder = async (req, res) => {
             await db.run('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, item.id]);
         }
 
-        const LocalTime = new Date().toTimeString().split(' ')[0];
+        // const LocalTime = new Date().toTimeString().split(' ')[0];
+        const LocalTime = new Date().toLocaleTimeString('en-IR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: 'Asia/Tehran',
+            hour12: false
+        });
+
         const TodayTime = `${todayString} ${LocalTime}`;
 
         const newOrder = {
@@ -85,9 +95,10 @@ export const createOrder = async (req, res) => {
             status: 'Pending',
             createdAt: TodayTime,
         };
+        console.log(`deliveryFloorId: ${deliveryFloorId}`);
         await db.run(
-            'INSERT INTO orders (id, userId, items, totalAmount, createdAt, status) VALUES (?, ?, ?, ?, ?, ?)',
-            [newOrder.id, newOrder.userId, newOrder.items, newOrder.totalAmount, newOrder.createdAt, newOrder.status]
+            'INSERT INTO orders (id, userId, items, totalAmount, createdAt, status, deliveryFloorId) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [newOrder.id, newOrder.userId, newOrder.items, newOrder.totalAmount, newOrder.createdAt, newOrder.status, deliveryFloorId]
         );
 
         await db.exec('COMMIT');

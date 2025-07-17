@@ -24,7 +24,7 @@ export default function ManageUsersPage() {
         try {
             setLoading(true);
             // Add the search term to the API call
-            const url = `/api/admin/users?search=${debouncedSearchTerm}`;
+            const url = `http://localhost:5001/api/admin/users?search=${debouncedSearchTerm}`;
             const res = await fetch(url, { credentials: 'include' });
             if (!res.ok) throw new Error("Failed to fetch users");
             const data = await res.json();

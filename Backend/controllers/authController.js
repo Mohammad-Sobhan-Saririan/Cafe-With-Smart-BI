@@ -96,7 +96,8 @@ export const login = async (req, res) => {
                 position: user.position,
                 creditBalance: user.creditBalance,
                 employeeNumber: user.employeeNumber,
-                role: user.role // Include role in the response
+                role: user.role,
+                defaultFloorId: user.defaultFloorId
             }
         });
 
@@ -117,8 +118,14 @@ export const getProfile = async (req, res) => {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         const { db } = await dbPromise;
-        const user = await db.get('SELECT id, name, email, phone, country, city, age, position, creditBalance, employeeNumber, role FROM users WHERE id = ?', [decoded.id]);
-
+        const user = await db.get(`
+      SELECT 
+        u.id, u.name, u.email, u.role, u.phone, u.country, u.city, u.age, u.position, u.creditBalance, u.defaultFloorId,u.employeeNumber,
+        f.name as defaultFloorName 
+      FROM users u
+      LEFT JOIN floors f ON u.defaultFloorId = f.id
+      WHERE u.id = ?
+    `, [decoded.id]);
         if (!user) {
             return res.status(404).json({ message: 'کاربر یافت نشد' });
         }

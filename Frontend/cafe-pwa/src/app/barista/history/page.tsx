@@ -17,7 +17,7 @@ export default function BaristaHistoryPage() {
     const fetchPastOrders = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/barista/history?page=${currentPage}`, { credentials: 'include' });
+            const res = await fetch(`http://localhost:5001/api/barista/history?page=${currentPage}`, { credentials: 'include' });
             if (!res.ok) throw new Error("Failed to fetch order history.");
             const data = await res.json();
             setOrders(data.orders || []);

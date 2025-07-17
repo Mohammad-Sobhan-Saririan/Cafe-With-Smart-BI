@@ -64,7 +64,7 @@ export default function OrderSuccessPage() {
         const fetchOrderDetails = async () => {
             try {
                 setLoading(true);
-                const res = await fetch(`/api/orders/${orderId}`);
+                const res = await fetch(`http://localhost:5001/api/orders/${orderId}`);
                 if (!res.ok) throw new Error('Could not find order details.');
                 const data = await res.json();
                 setOrder(data);

@@ -25,7 +25,7 @@ interface UserFormDialogProps {
 }
 
 // A reusable style for our glass inputs
-const glassInputStyle = "bg-white/5 border-white/20 placeholder:text-white/40 focus-visible:ring-indigo-400 focus-visible:ring-offset-0 focus-visible:ring-offset-[#001233]";
+export const glassInputStyle = "bg-white/5 border-white/20 placeholder:text-white/40 focus-visible:ring-indigo-400 focus-visible:ring-offset-0 focus-visible:ring-offset-[#001233]";
 
 export const UserFormDialog = ({ user, isOpen, onClose, onUpdate }: UserFormDialogProps) => {
     const [formData, setFormData] = useState<Partial<User>>({});
@@ -52,7 +52,7 @@ export const UserFormDialog = ({ user, isOpen, onClose, onUpdate }: UserFormDial
     const handleSubmit = async () => {
         setIsLoading(true);
         try {
-            const url = isEditMode ? `/api/admin/users/${user.id}` : '/api/admin/users';
+            const url = isEditMode ? `http://localhost:5001/api/admin/users/${user.id}` : 'http://localhost:5001/api/admin/users';
             const method = isEditMode ? 'PUT' : 'POST';
 
             const res = await fetch(`${url}`, {

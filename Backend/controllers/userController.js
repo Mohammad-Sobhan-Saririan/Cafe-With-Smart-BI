@@ -5,21 +5,21 @@ export const updateUserProfile = async (req, res) => {
     const userId = req.user.id;
 
     // 1. Destructure all the fields we want the user to be able to change
-    const { name, phone, country, city, age, position } = req.body;
+    const { name, phone, country, city, age, position, defaultFloorId } = req.body;
 
     try {
         const { db } = await dbPromise;
 
         // 2. Update the SQL query to include all the new fields
         await db.run(
-            `UPDATE users SET name = ?, phone = ?, country = ?, city = ?, age = ?, position = ?
+            `UPDATE users SET name = ?, phone = ?, country = ?, city = ?, age = ?, position = ?, defaultFloorId = ?
          WHERE id = ?`,
-            [name, phone, country, city, age, position, userId]
+            [name, phone, country, city, age, position, defaultFloorId, userId]
         );
 
         // 3. Fetch the complete, updated profile to send back
         const updatedUser = await db.get(
-            'SELECT id, name, email, role, phone, country, city, age, position, creditBalance FROM users WHERE id = ?',
+            'SELECT id, name, email, role, phone, country, city, age, position, creditBalance,defaultFloorId FROM users WHERE id = ?',
             [userId]
         );
 

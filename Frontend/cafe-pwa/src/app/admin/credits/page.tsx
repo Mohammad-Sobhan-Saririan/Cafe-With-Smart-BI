@@ -13,11 +13,12 @@ export default function ManageCreditsPage() {
     const [groupAmount, setGroupAmount] = useState('');
     const [groupPosition, setGroupPosition] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isCreditSystemEnabled, setIsCreditSystemEnabled] = useState(true);
 
     const handleUpdate = async (operation: 'set' | 'add', amount: string, filter?: object) => {
         setIsLoading(true);
         try {
-            const res = await fetch('/api/admin/credits/bulk-update', {
+            const res = await fetch('http://localhost:5001/api/admin/credits/bulk-update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -39,61 +40,101 @@ export default function ManageCreditsPage() {
         }
     };
 
+    const toggleCreditSystem = async () => {
+        setIsLoading(true);
+        try {
+            const res = await fetch('http://localhost:5001/api/admin/credits/change-system-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ isEnabled: !isCreditSystemEnabled }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'An error occurred.');
+
+            setIsCreditSystemEnabled(!isCreditSystemEnabled);
+            toast.success(data.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("خطایی رخ داده است!");
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <div>
-            <h2 className="text-2xl font-semibold mb-4">Manage User Credits</h2>
+        <div dir="rtl" className="">
+            <h2 className="text-2xl font-semibold mb-4">مدیریت اعتبار کاربران</h2>
+            <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <Button onClick={toggleCreditSystem} disabled={isLoading} className="w-full sm:w-auto bg-[#E91227] hover:bg-red-700 text-white cursor-pointer">
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isCreditSystemEnabled ? 'غیرفعال کردن سیستم اعتبار' : 'فعال کردن سیستم اعتبار'}
+                </Button>
+                <div className="flex flex-row items-start sm:items-center gap-2 text-sm font-medium">
+                    <span>وضعیت سیستم اعتبار:</span>
+                    <div className={`h-4 w-4 rounded-full ${isCreditSystemEnabled ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+                    <span className={isCreditSystemEnabled ? 'text-green-500' : 'text-red-500'}>
+                        {isCreditSystemEnabled ? 'فعال' : 'غیرفعال'}
+                    </span>
+                </div>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
                 {/* Card for updating ALL users */}
-                <Card>
+                <Card className="bg-white/5 backdrop-blur-lg border border-white/20 text-white transition-all duration-300">
                     <CardHeader>
-                        <CardTitle>Update All Users</CardTitle>
-                        <CardDescription>Set or add credit for every user in the system.</CardDescription>
+                        <CardTitle>بروزرسانی تمام کاربران</CardTitle>
+                        <CardDescription className="text-white/60">تنظیم یا افزودن اعتبار برای تمام کاربران سیستم.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Label htmlFor="all-users-amount">Amount</Label>
+                        <Label htmlFor="all-users-amount" className="pb-2"
+                        >مقدار</Label>
                         <Input
                             id="all-users-amount"
                             type="number"
-                            placeholder="e.g., 1000000"
+                            placeholder="مثال: ۱۰۰۰۰۰۰"
                             value={allUsersAmount}
                             onChange={(e) => setAllUsersAmount(e.target.value)}
                         />
                     </CardContent>
                     <CardFooter className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => handleUpdate('add', allUsersAmount)} disabled={isLoading}>
+                        <Button variant="outline" onClick={() => handleUpdate('add', allUsersAmount)} disabled={isLoading} className=" cursor-pointer">
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Add to Balances
+                            افزودن به اعتبارها
                         </Button>
-                        <Button onClick={() => handleUpdate('set', allUsersAmount)} disabled={isLoading}>
+                        <Button onClick={() => handleUpdate('set', allUsersAmount)} disabled={isLoading} className="bg-[#E91227] hover:bg-red-700 cursor-pointer">
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Set Balances
+                            تنظیم اعتبارها
                         </Button>
                     </CardFooter>
                 </Card>
 
-                {/* Card for updating users by group */}
-                <Card>
+                <Card className="bg-white/5 backdrop-blur-lg border border-white/20 text-white transition-all duration-300">
                     <CardHeader>
-                        <CardTitle>Update by Group</CardTitle>
-                        <CardDescription>Set or add credit for all users with a specific position.</CardDescription>
+                        <CardTitle>بروزرسانی بر اساس گروه</CardTitle>
+                        <CardDescription className="text-white/60"
+                        >تنظیم یا افزودن اعتبار برای کاربران با موقعیت خاص.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
-                            <Label htmlFor="group-position">Position</Label>
+                            <Label htmlFor="group-position" className="pb-2">موقعیت</Label>
                             <Input
                                 id="group-position"
-                                placeholder="e.g., Developer"
+                                placeholder="مثال: توسعه‌دهنده"
                                 value={groupPosition}
                                 onChange={(e) => setGroupPosition(e.target.value)}
                             />
                         </div>
                         <div>
-                            <Label htmlFor="group-amount">Amount</Label>
+                            <Label htmlFor="group-amount" className="pb-2">مقدار</Label>
                             <Input
                                 id="group-amount"
                                 type="number"
-                                placeholder="e.g., 1500000"
+                                placeholder="مثال: ۱۵۰۰۰۰۰"
                                 value={groupAmount}
                                 onChange={(e) => setGroupAmount(e.target.value)}
                             />
@@ -102,11 +143,11 @@ export default function ManageCreditsPage() {
                     <CardFooter className="flex justify-end gap-2">
                         <Button variant="outline" onClick={() => handleUpdate('add', groupAmount, { position: groupPosition })} disabled={isLoading || !groupPosition}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Add to Group
+                            افزودن به گروه
                         </Button>
                         <Button onClick={() => handleUpdate('set', groupAmount, { position: groupPosition })} disabled={isLoading || !groupPosition}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Set for Group
+                            تنظیم برای گروه
                         </Button>
                     </CardFooter>
                 </Card>

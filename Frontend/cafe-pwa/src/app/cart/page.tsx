@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,9 @@ import { PlacingOrderOverlay } from '@/components/PlacingOrderOverlay'; // Ensur
 import { toast } from 'sonner';
 // import icon for resume order from lucide-react
 import { Loader2, ShoppingCart } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Floor } from '@/types'; // Ensure this import matches your types file
+import { glassInputStyle } from '@/components/admin/UserFormDialog';
 
 
 
@@ -22,10 +25,25 @@ export default function CartPage() {
     const router = useRouter();
     const [employeeNumber, setEmployeeNumber] = useState('');
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+    const [floors, setFloors] = useState<Floor[]>([]);
+    const [selectedFloorId, setSelectedFloorId] = useState(user?.defaultFloorId || ''); // Default to user's preferred floor if available
 
     if (cart.length === 0 && !isPlacingOrder) {
         return <EmptyCart />;
     }
+    useEffect(() => {
+        // Fetch the list of available floors when the page loads
+        const fetchFloors = async () => {
+            const res = await fetch('http://localhost:5001/api/floors');
+            const data = await res.json();
+            setFloors(data);
+            // If user is logged in and has a default floor, pre-select it
+            if (user?.defaultFloorId) {
+                setSelectedFloorId(user.defaultFloorId);
+            }
+        };
+        fetchFloors();
+    }, [user]);
 
     const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -34,14 +52,15 @@ export default function CartPage() {
         setIsPlacingOrder(true); // 1. Show the overlay immediately
 
         try {
-            const res = await fetch('/api/orders', {
+            const res = await fetch('http://localhost:5001/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
                 body: JSON.stringify({
                     items: cart,
                     totalAmount: total,
-                    employeeNumber: employeeNumber || user?.employeeNumber
+                    employeeNumber: employeeNumber || user?.employeeNumber || '',
+                    deliveryFloorId: selectedFloorId // Send the selected floor
                 }),
             });
 
@@ -107,7 +126,19 @@ export default function CartPage() {
                             )}
                         </div>
 
-                        <Separator className="my-4 sm:my-6 bg-white/20" />
+                        <Separator className="my-2 sm:my-3 bg-white/20" />
+                        <div className="space-y-2 mb-4">
+                            <Label htmlFor="floor" className="text-white/80 text-lg">طبقه تحویل</Label>
+                            <Select value={selectedFloorId.toString()} onValueChange={setSelectedFloorId} dir="rtl">
+                                <SelectTrigger className={glassInputStyle}><SelectValue placeholder="یک طبقه را انتخاب کنید..." /></SelectTrigger>
+                                <SelectContent className='bg-white/5 backdrop-blur-lg border border-white/20 text-white'>
+                                    {floors.map(floor => (
+                                        <SelectItem key={floor.id} value={(floor.id.toString())}>{floor.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
                         {/* Employee Number Section */}
                         <div className="space-y-2">
                             <Label htmlFor="employeeNumber" className="text-white/80 text-sm sm:text-base">شماره پرسنلی (اختیاری)</Label>

@@ -16,7 +16,7 @@ export default function SavedReportsPage() {
     const fetchSavedReports = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/reports/saved', { credentials: 'include' });
+            const res = await fetch('http://localhost:5001/api/reports/saved', { credentials: 'include' });
             if (!res.ok) throw new Error("Failed to fetch saved reports.");
             const data = await res.json();
             setReports(data);
@@ -36,7 +36,7 @@ export default function SavedReportsPage() {
     const handleDeleteReport = async (reportId: string) => {
         if (!confirm("Are you sure you want to delete this report?")) return;
         try {
-            await fetch(`/api/reports/${reportId}`, { method: 'DELETE', credentials: 'include' });
+            await fetch(`http://localhost:5001/api/reports/${reportId}`, { method: 'DELETE', credentials: 'include' });
             toast.success("Report deleted successfully.");
             // This will now work correctly and refresh the list
             fetchSavedReports();

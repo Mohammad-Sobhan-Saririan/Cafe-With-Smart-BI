@@ -11,6 +11,9 @@ const navItems = [
     { href: "/admin", label: "داشبورد", icon: LayoutDashboard },
     { href: "/admin/users", label: "کاربران", icon: Users },
     { href: "/admin/orders", label: "سفارش‌ها", icon: Package },
+    { href: "/admin/credits", label: "مدیریت اعتبار", icon: Users },
+    // { href: "/admin/floors", label: "مدیریت طبقات", icon: Users },
+
     { href: "/admin/reporting", label: "گزارشات هوشمند", icon: FileText },
 ];
 

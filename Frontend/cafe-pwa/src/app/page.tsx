@@ -23,7 +23,7 @@ export interface Product {
 
 async function getProducts(): Promise<Product[]> {
   try {
-    const res = await fetch('/api/products', { cache: 'no-store' });
+    const res = await fetch('http://localhost:5001/api/products', { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch data');
     return res.json();
   } catch (error) {

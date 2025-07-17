@@ -28,7 +28,7 @@ export default function ReportingWorkshopPage() {
         setReportData(null);
         setChartConfig(null);
         try {
-            const res = await fetch('/api/reports/run', {
+            const res = await fetch('http://localhost:5001/api/reports/run', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                 body: JSON.stringify({ nl_query: queryToRun }),
             });
@@ -64,7 +64,7 @@ export default function ReportingWorkshopPage() {
         if (!reportData) return;
         setIsChartLoading(true);
         try {
-            const res = await fetch('/api/reports/generate-chart', {
+            const res = await fetch('http://localhost:5001/api/reports/generate-chart', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                 body: JSON.stringify({ data: reportData, userQuery: nlQuery, chartPrompt }),
             });
@@ -88,7 +88,7 @@ export default function ReportingWorkshopPage() {
         if (!reportName) return;
         setIsSaving(true);
         try {
-            await fetch('/api/reports/save', {
+            await fetch('http://localhost:5001/api/reports/save', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
                 body: JSON.stringify({
                     name: reportName,

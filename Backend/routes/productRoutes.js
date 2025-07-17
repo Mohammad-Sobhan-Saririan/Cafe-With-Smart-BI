@@ -6,7 +6,7 @@ import {
     updateProduct,
     deleteProduct
 } from '../controllers/productController.js';
-import { protect, barista } from '../middleware/authMiddleware.js';
+import { protect, can } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -14,9 +14,9 @@ const router = express.Router();
 router.get('/', getAllProducts);
 
 // --- Protected Barista/Admin Routes ---
-router.get('/manage', protect, barista, getManageableProducts);
-router.post('/', protect, barista, createProduct);
-router.put('/:id', protect, barista, updateProduct);
-router.delete('/:id', protect, barista, deleteProduct);
+router.get('/manage', protect, can('barista', 'admin'), getManageableProducts);
+router.post('/', protect, can('barista', 'admin'), createProduct);
+router.put('/:id', protect, can('barista', 'admin'), updateProduct);
+router.delete('/:id', protect, can('barista', 'admin'), deleteProduct);
 
 export default router;
