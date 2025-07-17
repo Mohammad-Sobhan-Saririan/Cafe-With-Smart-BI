@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
-import type { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
