@@ -65,3 +65,58 @@ export const changeUserPassword = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+export const getUserFavorites = async (req, res) => {
+    const userId = req.user.id;
+    const TOP_N = 3; // Show the top 3 items
+
+    // --- Define our "Gain Parameters" or weights ---
+    const POINTS_PER_ORDER = 4; // The bonus for appearing in an order
+    const POINTS_PER_UNIT = 1;   // The bonus for each unit of quantity
+
+    try {
+        const { db } = await dbPromise;
+
+        const orders = await db.all('SELECT items FROM orders WHERE userId = ?', [userId]);
+        if (orders.length === 0) {
+            return res.json([]);
+        }
+
+        // --- NEW SCORING LOGIC ---
+        const productScores = new Map();
+
+        for (const order of orders) {
+            const items = JSON.parse(order.items);
+            // Get a list of unique product IDs for this order to apply the frequency bonus only once per order
+            const uniqueProductIdsInOrder = [...new Set(items.map(item => item.id))];
+
+            // Add the frequency bonus for each unique product in this order
+            for (const productId of uniqueProductIdsInOrder) {
+                const currentScore = productScores.get(productId) || 0;
+                productScores.set(productId, currentScore + POINTS_PER_ORDER);
+            }
+
+            // Add the quantity bonus for every item
+            for (const item of items) {
+                const currentScore = productScores.get(item.id) || 0;
+                productScores.set(item.id, currentScore + (item.quantity * POINTS_PER_UNIT));
+            }
+        }
+
+        // The rest of the logic remains the same: sort by the new scores and fetch the products
+        const sortedProducts = [...productScores.entries()].sort((a, b) => b[1] - a[1]);
+        const topProductIds = sortedProducts.slice(0, TOP_N).map(p => p[0]);
+
+        if (topProductIds.length === 0) {
+            return res.json([]);
+        }
+
+        const placeholders = topProductIds.map(() => '?').join(',');
+        const topProducts = await db.all(`SELECT * FROM products WHERE id IN (${placeholders})`, topProductIds);
+        const orderedTopProducts = topProductIds.map(id => topProducts.find(p => p.id === id));
+
+        res.status(200).json(orderedTopProducts);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};

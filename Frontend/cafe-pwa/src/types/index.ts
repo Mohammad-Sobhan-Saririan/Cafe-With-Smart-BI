@@ -56,3 +56,6 @@ export interface Floor { id: number; name: string; }
 export const statusTranslations: { [key in Order['status']]: string } = {
     Pending: "در انتظار", Completed: "تکمیل شده", Cancelled: "لغو شده"
 };
+export interface ProductCardProps {
+    product: Product;
+}

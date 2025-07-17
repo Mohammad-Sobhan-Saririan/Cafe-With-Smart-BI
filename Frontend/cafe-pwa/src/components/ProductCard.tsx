@@ -2,14 +2,12 @@
 
 import Image from 'next/image';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
-import type { Product } from '@/app/page';
+import type { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
+import { ProductCardProps } from '@/types';
 
-interface ProductCardProps {
-    product: Product;
-}
 
 export const ProductCard = ({ product }: ProductCardProps) => {
     const { cart, addToCart, increaseQuantity, decreaseQuantity } = useCartStore();
@@ -85,11 +83,11 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
                     ) : (
                         <div className="flex items-center gap-1 justify-end w-full md:w-auto">
-                            <Button size="icon" onClick={() => decreaseQuantity(product.id)} className="bg-[#E91227] rounded-md hover:bg-[#5c0009] transition-colors h-6 w-6 md:h-7 md:w-7">
+                            <Button size="icon" onClick={() => product.id && decreaseQuantity(product.id)} className="bg-[#E91227] rounded-md hover:bg-[#5c0009] transition-colors h-6 w-6 md:h-7 md:w-7">
                                 <Minus size={12} className="md:size-5" />
                             </Button>
                             <span className="text-md md:text-lg font-bold w-6 text-center">{quantity}</span>
-                            <Button size="icon" onClick={() => increaseQuantity(product.id)} disabled={isStockLimitReached} className="bg-[#E91227] rounded-md hover:bg-[#5c0009] transition-colors h-6 w-6 md:h-7 md:w-7">
+                            <Button size="icon" onClick={() => product.id && increaseQuantity(product.id)} disabled={isStockLimitReached} className="bg-[#E91227] rounded-md hover:bg-[#5c0009] transition-colors h-6 w-6 md:h-7 md:w-7">
                                 <Plus size={12} className="md:size-5" />
                             </Button>
                         </div>

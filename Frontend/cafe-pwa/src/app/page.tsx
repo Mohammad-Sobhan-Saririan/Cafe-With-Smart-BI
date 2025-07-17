@@ -5,18 +5,8 @@ import { ProductCard } from '@/components/ProductCard';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'; // Import new Hook
 import { ScrollAwareNav } from '@/components/ScrollAwareNav'; // Import new Nav
 import { toast } from 'sonner';
-
-// 1. A cleaner Product interface to match our SQLite database
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  category: 'بار گرم' | 'بار سرد';
-  imageUrl?: string;
-  rating: number;
-  maxOrderPerUser: number;
-  stock: number;
-}
+import type { Product } from '@/types'; // Assuming Product type is exported from types
+import { FavoritesSection } from '@/components/FavoritesSection';
 
 // const HOT_BAR_CATEGORY = 'بار گرم';
 // const COLD_BAR_CATEGORY = 'بار سرد';
@@ -78,6 +68,8 @@ export default function HomePage() {
 
       <main className="container mx-auto p-4 sm:p-6"
         style={{ direction: 'rtl' }}>
+        <FavoritesSection />
+
         {/* Hot Bar Section */}
         <section id="hot-bar" className="mb-18 scroll-mt-54">
           <h2 className="text-3xl font-bold mb-6 text-white text-center lg:text-center">

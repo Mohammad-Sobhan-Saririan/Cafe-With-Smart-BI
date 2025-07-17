@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { useCartStore } from '@/store/cartStore';
+import { useCartStore, type CartItem as CartItemType } from '@/store/cartStore'; // Import the type too
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,7 +33,23 @@ export default function CartPage() {
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
     const [floors, setFloors] = useState<Floor[]>([]);
     const [selectedFloorId, setSelectedFloorId] = useState(user?.defaultFloorId || ''); // Default to user's preferred floor if available
+    const [isHydrated, setIsHydrated] = useState(false);
 
+    const useSafeCart = () => {
+        const [cart, setCart] = useState<CartItemType[]>([]);
+        const { clearCart } = useCartStore(); // We can get actions directly
+
+        useEffect(() => {
+            // This effect runs on the client after the component mounts.
+            // We subscribe to the store to get updates and set the initial state.
+            const unsubscribe = useCartStore.subscribe(state => setCart(state.cart));
+            setCart(useCartStore.getState().cart); // Set initial state
+
+            return () => unsubscribe(); // Cleanup subscription on unmount
+        }, []);
+
+        return { cart, clearCart };
+    };
     useEffect(() => {
         // Fetch the list of available floors when the page loads
         const fetchFloors = async () => {
@@ -47,6 +63,15 @@ export default function CartPage() {
         };
         fetchFloors();
     }, [user]);
+
+
+    useEffect(() => {
+        setIsHydrated(true);
+    }, []);
+
+    if (!isHydrated) {
+        return <div className="flex justify-center items-center h-[80vh]"><Loader2 className="h-8 w-8 animate-spin text-white" /></div>;
+    }
 
     if (cart.length === 0 && !isPlacingOrder) {
         return <EmptyCart />;

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Product } from '@/app/page'; // Assuming Product type is exported from page.tsx
+import type { Product } from '@/types'; // Import the Product type
 
 export interface CartItem extends Product {
     quantity: number;
