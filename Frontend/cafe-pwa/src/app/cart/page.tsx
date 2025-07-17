@@ -11,6 +11,8 @@ import { CartItem } from '@/components/CartItem';
 import { EmptyCart } from '@/components/EmptyCart';
 import { PlacingOrderOverlay } from '@/components/PlacingOrderOverlay'; // Ensure this is the correct import
 import { toast } from 'sonner';
+import { getDistanceInMeters } from '@/lib/location'; // Import our new helper
+
 // import icon for resume order from lucide-react
 import { Loader2, ShoppingCart } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -18,6 +20,10 @@ import { Floor } from '@/types'; // Ensure this import matches your types file
 import { glassInputStyle } from '@/components/admin/UserFormDialog';
 
 
+const ORGANIZATION_LAT = 35.798784201925315; // Example: Tehran
+const ORGANIZATION_LON = 51.47636585505412
+
+const ALLOWED_RADIUS_METERS = 500; // e.g., 500 meters
 
 export default function CartPage() {
     const { user } = useAuthStore();
@@ -95,6 +101,49 @@ export default function CartPage() {
 
     };
 
+    const handleCheckout = async () => {
+        setIsPlacingOrder(true); // Show overlay immediately
+
+        // If user is logged in, they can order from anywhere.
+        if (user) {
+            await handleCreateOrder();
+            return;
+        }
+
+        // If user is a GUEST, check their location first.
+        if (!navigator.geolocation) {
+            toast.error("مرورگر شما از موقعیت‌یابی پشتیبانی نمی‌کند. لطفا وارد شوید.");
+            setIsPlacingOrder(false);
+            return;
+        }
+
+        toast.info("برای ثبت سفارش مهمان، موقعیت مکانی شما بررسی می‌شود...");
+        navigator.geolocation.getCurrentPosition(
+            // Success Callback: User approved location access
+            async (position) => {
+                const distance = getDistanceInMeters(
+                    position.coords.latitude, position.coords.longitude,
+                    ORGANIZATION_LAT, ORGANIZATION_LON
+                );
+
+                if (distance <= ALLOWED_RADIUS_METERS) {
+                    await handleCreateOrder(); // Location is valid, proceed with the order
+                } else {
+                    toast.error("شما خارج از محدوده سازمان هستید. برای ثبت سفارش لطفا وارد حساب کاربری خود شوید.");
+                    setTimeout(() => router.push('/login'), 1000);
+                    setIsPlacingOrder(false);
+                }
+            },
+            // Error Callback: User denied location access
+            () => {
+                toast.error("دسترسی به موقعیت مکانی رد شد. شما به صفحه ورود منتقل می‌شوید.");
+                // As you requested, redirect to login if permission is denied.
+                setTimeout(() => router.push('/login'), 2000);
+                setIsPlacingOrder(false);
+            }
+        );
+    };
+
     return (
         <>
             {/* This will now render correctly every time */}
@@ -157,8 +206,8 @@ export default function CartPage() {
                         </div>
 
                         <Button
-                            onClick={handleCreateOrder}
-                            disabled={isPlacingOrder}
+                            onClick={handleCheckout}
+                            disabled={isPlacingOrder || !selectedFloorId}
                             size="lg"
                             className="w-full mt-4 sm:mt-6 text-sm sm:text-lg bg-[#E91227] text-white hover:bg-red-700 disabled:opacity-50"
                         >
